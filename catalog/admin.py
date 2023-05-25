@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Product
+from .models import Category, Product, Contacts
 
 # Register your models here.
 
@@ -8,11 +8,15 @@ from .models import Category, Product
 
 
 @admin.register(Category)
-class StudentAdmin(admin.ModelAdmin):
+class CategoryAdmin(admin.ModelAdmin):
     list_display = ('id', 'name',)
 
 @admin.register(Product)
-class StudentAdmin(admin.ModelAdmin):
+class ProductAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'description', 'price', 'category',)
     list_filter = ('category',)
     search_fields = ('name', 'description',)
+
+@admin.register(Contacts)
+class ContactsAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'phone', 'email',)
