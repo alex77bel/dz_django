@@ -2,8 +2,8 @@ from django.db import models
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Наименование')
-    description = models.TextField(verbose_name='Описание')
+    name = models.CharField(max_length=100, verbose_name='Наименование', blank=False, null=False, unique=True)
+    description = models.TextField(verbose_name='Описание', blank=True, null=True)
 
     def __str__(self):
         return f'{self.name} ({self.description})'
@@ -15,13 +15,13 @@ class Category(models.Model):
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Наименование')
-    description = models.TextField(verbose_name='Описание')
+    name = models.CharField(max_length=100, verbose_name='Наименование', blank=False, null=False)
+    description = models.TextField(verbose_name='Описание', blank=True, null=True)
     image = models.ImageField(upload_to='products/', verbose_name='Изображение', null=True, blank=True)
-    price = models.FloatField(verbose_name='Цена')
-    date_create = models.DateField(verbose_name='Дата создания')
-    date_modify = models.DateField(verbose_name='Дата изменения')
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория')
+    price = models.FloatField(verbose_name='Цена', blank=False, null=False)
+    date_create = models.DateField(verbose_name='Дата создания', auto_now_add=True)
+    date_modify = models.DateField(verbose_name='Дата изменения', auto_now=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, verbose_name='Категория', null=True)
 
     def __str__(self):
         return f'{self.name} ({self.description})'
