@@ -1,23 +1,32 @@
 {% extends 'catalog/base.html' %}
-
 {% block content %}
-<div class="album py-5 bg-light">
-    <div class="container">
-        <div class="row">
-            {% for product in object_list %}
-                <div class="col-md-4">
-                    <div class="card mb-4 box-shadow">
-                        <img class="card-img-top"
-                             data-src="holder.js/100px225?theme=thumb&bg=55595c&fg=eceeef&text=Thumbnail"
-                             alt="Card image cap">
-                        <div class="card-body">
-                            <p class="card-text">{{ product }}</p>
+
+    <div class="album py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                {% for product in page_obj %}
+                    <div class="col-md-4">
+                        <div class="card mb-4 box-shadow text-info">
+                            <div class="card-body">
+                                <p class="card-text">Наименование: {{ product.name }}</p>
+                                <p class="card-text">Описание: {{ product.description|slice:'0:100' }}...</p>
+
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-sm btn-outline-primary">
+                                            <a href="{% url 'catalog:product' product.id %}">View</a>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
         </div>
     </div>
-</div>
+
+    {% include 'catalog/foot_inc.html' %}
 
 {% endblock %}
+

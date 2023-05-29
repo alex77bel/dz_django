@@ -1,18 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Контакты</title>
-</head>
-<body>
-<h1>Контактная информация</h1>
-<a href='/'>Домашняя страница</a><br>
-<br>
-{% for contact in contacts %}
-    Имя: {{ contact.name }}<br>
-    Телефон: {{ contact.phone }}<br>
-    Почта: {{ contact.email }}<br>
-    <br>
-{% endfor %}
-</body>
-</html>
+{% extends 'catalog/base.html' %}
+{% block content %}
+    <body>
+        <div class="container text-primary">
+            <div class="row justify-content-md-center">
+                <h1>Контактная информация</h1>
+            </div>
+        </div>
+        <div class="album py-4 bg-dark">
+            <div class="container">
+                <div class="row">
+                    {% for contact in object_list %}
+                        <div class="col-md-6">
+                            <div class="card mb-4 box-shadow text-info">
+                                <div class="card-body">
+                                    <p class="card-text">Имя: {{ contact.name }}</p>
+                                    <p class="card-text">Телефон: {{ contact.phone }}</p>
+                                    <p class="card-text">Почта: {{ contact.email }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </body>
+{% endblock %}
