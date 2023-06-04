@@ -8,19 +8,16 @@
         </div>
     </div>
     {% for post in object_list %}
-
-
         <div class="col-md-12">
             <div class="card mb-4 box-shadow text-primary m-2">
                 <div class="card-body">
                     <p class="card-text m-1">
                     <h4>{{ post }}</h4>
                     <h5><p class="card-text text-info">{{ post.content|truncatewords:10 }}</p></h5>
-                    <a href="{% url 'catalog:post' post.slug %}">Перейти к статье</a>
-                    <a href="{% url 'catalog:update_post' post.slug %}">Редактировать</a>
-                    <a href="{% url 'catalog:delete_post' post.slug %}">Удалить</a><br>
+                    <a href="{% url 'catalog:post' post.created.year post.created.month post.created.day post.slug %}">Перейти к статье</a>
+                    <a href="{% url 'catalog:update_post' post.created.year post.created.month post.created.day post.slug %}">Редактировать</a>
+                    <a href="{% url 'catalog:delete_post' post.created.year post.created.month post.created.day post.slug %}">Удалить</a><br>
                     Просмотры: {{ post.views }}<br><br>
-
                 </div>
             </div>
         </div>
