@@ -1,51 +1,107 @@
-from django.core.paginator import Paginator
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
-
-from catalog.models import Product, Contacts
-from catalog.forms import UploadFileForm
+from django.urls import reverse_lazy, reverse
+from django.utils.text import slugify
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from catalog.models import Product, Contacts, Post
+from catalog.services import sendmail
 
 PRODUCTS_PER_PAGE = 9
 
 
-def home_page(request):
-    object_list = Product.objects.all()
-    paginator = Paginator(object_list, PRODUCTS_PER_PAGE)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    context = {
-        'page_obj': page_obj,
+class HomePageListView(ListView):
+    model = Product
+    paginate_by = PRODUCTS_PER_PAGE
+    template_name = 'catalog/index.html'
+    extra_context = {
         'title': 'Домашняя страница'
     }
-    return render(request, 'catalog/index.html', context)
 
 
-def contacts_page(request):
-    context = {
-        'object_list': Contacts.objects.all(),
+class ContactsListView(ListView):
+    model = Contacts
+    extra_context = {
         'title': 'Контакты'
     }
-    return render(request, 'catalog/contacts.html', context)
 
 
-def product_page(request, product_id):
-    context = {
-        'object': Product.objects.get(pk=product_id),
-        'title': 'Товар'
+class ProductDetailView(DetailView):
+    model = Product
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data['title'] = 'Просмотр продукта'
+        return context_data
+
+
+class ProductCreateView(CreateView):
+    model = Product
+    fields = ['name', 'description', 'image', 'price', 'category']
+    success_url = reverse_lazy('catalog:home')
+    extra_context = {
+        'title': 'Создание продукта'
     }
-    return render(request, 'catalog/product.html', context)
 
 
-def add_product(request):
-    if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect("/")
-    else:
-        form = UploadFileForm
-    context = {
-        'form': form,
-        'title': 'Новый продукт'
+class BlogPostCreateView(CreateView):
+    model = Post
+    fields = ('title', 'content', 'preview', 'published')
+    success_url = reverse_lazy('catalog:blog')
+    extra_context = {
+        'title': 'Создание статьи'
     }
-    return render(request, 'catalog/add_product.html', context)
+
+    def form_valid(self, form):
+        if form.is_valid:
+            fields = form.save(commit=False)
+            string = fields.title.translate(
+                str.maketrans("абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ",
+                              "abvgdeejzijklmnoprstufhzcss_y_euaABVGDEEJZIJKLMNOPRSTUFHZCSS_Y_EUA"))
+            fields.slug = slugify(string)
+            fields.save()
+        return super().form_valid(form)
+
+
+class BlogView(ListView):
+    model = Post
+    template_name = 'catalog/blog.html'
+    extra_context = {
+        'title': 'Блог'
+    }
+
+    def get_queryset(self, *args, **kwargs):
+        queryset = super().get_queryset(*args, **kwargs)
+        queryset = queryset.filter(published=True)
+        return queryset
+
+
+class BlogPostDetailView(DetailView):
+    model = Post
+
+    def get_object(self, queryset=None):  # добавление одного просмотра
+        post = super().get_object()
+        post.add_view()
+        if post.views == 100:
+            sendmail(f'Поздравляю, статья "{post.title}" набрала {post.views} просмотров')
+        post.save()
+
+        return post
+
+    def get_context_data(self, **kwargs):  # получение 'title'
+        context_data = super().get_context_data(**kwargs)
+        context_data['title'] = 'Просмотр статьи'
+        return context_data
+
+
+class BlogPostUpdateView(UpdateView):
+    model = Post
+    fields = ('title', 'content', 'preview', 'published')
+    extra_context = {
+        'title': 'Изменить статью'
+    }
+
+    def get_success_url(self):
+        return reverse('catalog:post', args=[self.kwargs.get('slug')])
+
+
+class BlogPostDeleteView(DeleteView):
+    model = Post
+    success_url = reverse_lazy('catalog:blog')
