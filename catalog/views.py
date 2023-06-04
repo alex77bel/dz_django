@@ -99,7 +99,7 @@ class BlogPostUpdateView(UpdateView):
     }
 
     def get_success_url(self):
-        return reverse('catalog:post', args=[self.kwargs.get('slug')])
+        return reverse('catalog:post', args=[*self.kwargs.values()])
 
 
 class BlogPostDeleteView(DeleteView):
