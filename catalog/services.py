@@ -8,5 +8,5 @@ def sendmail(message):  # отправка письма
         'Рассылка Django',
         message,
         settings.EMAIL_HOST_USER,
-        ['alex77bel@yandex.ru',],
+        ['alex77bel@yandex.ru', ],
     )
