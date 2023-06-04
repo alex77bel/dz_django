@@ -1,4 +1,6 @@
+from django.contrib.auth.models import User
 from django.db import models
+from django.urls import reverse
 
 
 class Category(models.Model):
@@ -44,3 +46,29 @@ class Contacts(models.Model):
         verbose_name = 'Контакт'
         verbose_name_plural = 'Контакты'
         ordering = ('name',)
+
+
+class Post(models.Model):
+    title = models.CharField(max_length=255, verbose_name='Заголовок')
+    slug = models.CharField(max_length=255, verbose_name='Слаг', unique_for_date='created')
+    content = models.TextField(verbose_name='Содержимое')
+    preview = models.ImageField(upload_to='blog/', verbose_name='Изображение')
+    created = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    published = models.BooleanField(verbose_name='Признак публикации', default=False)
+    views = models.PositiveIntegerField(verbose_name='Количество просмотров', default=0)
+
+    def add_view(self):
+        self.views += 1
+        return self.views
+
+    def delete(self, *args, **kwargs):
+        self.published = False
+        self.save()
+
+    def __str__(self):
+        return f'Название статьи: {self.title}'
+
+    class Meta:
+        verbose_name = 'Статья'
+        verbose_name_plural = 'Статьи'
+        ordering = ('-created',)

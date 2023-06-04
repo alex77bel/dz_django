@@ -24,13 +24,24 @@
             <a class="nav-link" href="{% url 'catalog:home' %}">Домашняя страница</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{% url 'catalog:add_product' %}">Добавить продукт</a>
+            <a class="nav-link" href="{% url 'catalog:create_product' %}">Добавить продукт</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="{% url 'catalog:contacts' %}">Контакты</a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'catalog:blog' %}">Блог</a>
+        </li>
+
     </ul>
 </div>
+
+<div class="container text-primary">
+    <div class="row justify-content-md-center">
+        <h1>{{ title|truncatechars:20 }}</h1>
+    </div>
+</div>
+
 
 {% block content %}
 {% endblock %}
