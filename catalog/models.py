@@ -18,14 +18,14 @@ class Category(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=100, verbose_name='Наименование', blank=False, null=False)
     description = models.TextField(verbose_name='Описание', blank=True, null=True)
-    image = models.ImageField(upload_to='products/', verbose_name='Изображение', null=True, blank=True)
+    image = models.ImageField(upload_to='products/', verbose_name='Изображение')
     price = models.FloatField(verbose_name='Цена', blank=False, null=False)
     date_create = models.DateField(verbose_name='Дата создания', auto_now_add=True)
     date_modify = models.DateField(verbose_name='Дата изменения', auto_now=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, verbose_name='Категория', null=True)
 
     def __str__(self):
-        return f'{self.name} ({self.description})'
+        return f'{self.name}'
 
     class Meta:
         verbose_name = 'Товар'
@@ -65,9 +65,24 @@ class Post(models.Model):
         self.save()
 
     def __str__(self):
-        return f'Название статьи: {self.title}'
+        return f'{self.title}'
 
     class Meta:
         verbose_name = 'Статья'
         verbose_name_plural = 'Статьи'
         ordering = ('-created',)
+
+
+class Version(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт', related_name='version')
+    version_number = models.PositiveIntegerField(verbose_name='Номер версии', null=False, blank=False)
+    version_name = models.CharField(max_length=50, verbose_name='Имя версии', null=True, blank=True)
+    is_active = models.BooleanField(default=False, verbose_name='Признак версии')
+
+    def __str__(self):
+        return f'{self.version_number}'
+
+    class Meta:
+        verbose_name = 'Версия'
+        verbose_name_plural = 'Версии'
+        ordering = ('version_number',)

@@ -1,49 +1,16 @@
 from django.urls import reverse_lazy, reverse
 from django.utils.text import slugify
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from catalog.models import Product, Contacts, Post
+
+from catalog.forms import BlogForm
+from catalog.models import Post
 from catalog.services import sendmail
 
-PRODUCTS_PER_PAGE = 9
-
-
-class HomePageListView(ListView):
-    model = Product
-    paginate_by = PRODUCTS_PER_PAGE
-    template_name = 'catalog/index.html'
-    extra_context = {
-        'title': 'Домашняя страница'
-    }
-
-
-class ContactsListView(ListView):
-    model = Contacts
-    extra_context = {
-        'title': 'Контакты'
-    }
-
-
-class ProductDetailView(DetailView):
-    model = Product
-
-    def get_context_data(self, **kwargs):
-        context_data = super().get_context_data(**kwargs)
-        context_data['title'] = 'Просмотр продукта'
-        return context_data
-
-
-class ProductCreateView(CreateView):
-    model = Product
-    fields = ['name', 'description', 'image', 'price', 'category']
-    success_url = reverse_lazy('catalog:home')
-    extra_context = {
-        'title': 'Создание продукта'
-    }
 
 
 class BlogPostCreateView(CreateView):
     model = Post
-    fields = ('title', 'content', 'preview', 'published')
+    form_class = BlogForm
     success_url = reverse_lazy('catalog:blog')
     extra_context = {
         'title': 'Создание статьи'
@@ -93,7 +60,7 @@ class BlogPostDetailView(DetailView):
 
 class BlogPostUpdateView(UpdateView):
     model = Post
-    fields = ('title', 'content', 'preview', 'published')
+    form_class = BlogForm
     extra_context = {
         'title': 'Изменить статью'
     }
@@ -104,4 +71,8 @@ class BlogPostUpdateView(UpdateView):
 
 class BlogPostDeleteView(DeleteView):
     model = Post
+    template_name = 'catalog/confirm_delete.html'
+    extra_context = {
+        'title': 'Удаление'
+    }
     success_url = reverse_lazy('catalog:blog')
