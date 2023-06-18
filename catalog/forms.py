@@ -16,14 +16,12 @@ class ProductForm(StyleFormMixin, forms.ModelForm):
         model = Product
         fields = ('name', 'description', 'image', 'price', 'category')
 
-    def clean_name(self):
-        cleaned_data = self.cleaned_data['name']
-        check_words(cleaned_data)
-        return cleaned_data
-
-    def clean_description(self):
-        cleaned_data = self.cleaned_data['description']
-        check_words(cleaned_data)
+    def clean(self):
+        cleaned_data = super().clean()
+        name = cleaned_data['name']
+        check_words(name)
+        description = cleaned_data['description']
+        check_words(description)
         return cleaned_data
 
 
@@ -33,12 +31,11 @@ class VersionForm(StyleFormMixin, forms.ModelForm):
         fields = '__all__'
 
     def clean_is_active(self):
-        cleaned_data = self.cleaned_data['is_active']
+        is_active = self.cleaned_data['is_active']
         product = self.cleaned_data['product']
-        is_active_version_exists = Version.objects.filter(product=product, is_active=True).exists()
-        if cleaned_data and is_active_version_exists:
-            raise forms.ValidationError('Уже есть активная версия')
-        return cleaned_data
+        if is_active:
+            Version.objects.filter(product=product).exclude(id=self.instance.id).update(is_active=False)
+        return is_active
 
 
 class BlogForm(StyleFormMixin, forms.ModelForm):
