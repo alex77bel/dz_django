@@ -1,6 +1,6 @@
 from django.urls import reverse_lazy, reverse
 from django.utils.text import slugify
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views import generic
 
 from catalog.forms import BlogForm
 from catalog.models import Post
@@ -8,7 +8,7 @@ from catalog.services import sendmail
 
 
 
-class BlogPostCreateView(CreateView):
+class BlogPostCreateView(generic.CreateView):
     model = Post
     form_class = BlogForm
     success_url = reverse_lazy('catalog:blog')
@@ -27,7 +27,7 @@ class BlogPostCreateView(CreateView):
         return super().form_valid(form)
 
 
-class BlogView(ListView):
+class BlogView(generic.ListView):
     model = Post
     template_name = 'catalog/blog.html'
     extra_context = {
@@ -40,16 +40,18 @@ class BlogView(ListView):
         return queryset
 
 
-class BlogPostDetailView(DetailView):
+class BlogPostDetailView(generic.DetailView):
     model = Post
 
     def get_object(self, queryset=None):  # добавление одного просмотра
         post = super().get_object()
         post.add_view()
         if post.views == 100:
-            sendmail(f'Поздравляю, статья "{post.title}" набрала {post.views} просмотров')
+            sendmail(
+                f'Поздравляю, статья "{post.title}" набрала {post.views} просмотров',
+                ('alex77bel@yandex.ru', )
+            )
         post.save()
-
         return post
 
     def get_context_data(self, **kwargs):  # получение 'title'
@@ -58,7 +60,7 @@ class BlogPostDetailView(DetailView):
         return context_data
 
 
-class BlogPostUpdateView(UpdateView):
+class BlogPostUpdateView(generic.UpdateView):
     model = Post
     form_class = BlogForm
     extra_context = {
@@ -69,7 +71,7 @@ class BlogPostUpdateView(UpdateView):
         return reverse('catalog:post', args=[*self.kwargs.values()])
 
 
-class BlogPostDeleteView(DeleteView):
+class BlogPostDeleteView(generic.DeleteView):
     model = Post
     template_name = 'catalog/confirm_delete.html'
     extra_context = {

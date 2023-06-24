@@ -17,18 +17,21 @@
                             <p class="card-text">Наименование: {{ product.name }}</p>
                             <p class="card-text">Описание: {{ product.description|truncatewords:20 }}</p>
                             {% for version in product.version.all %}
-                                <p class="card-text">{% if version.is_active %}Активная версия: {{ version }} {% endif %}</p>
+                                <p class="card-text">
+                                    {% if version.is_active %}Активная версия: {{ version }} {% endif %}</p>
                             {% endfor %}
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group">
-                                    <a href='{% url 'catalog:product' product.id %}'
-                                       class="btn btn-outline-primary">Просмотр</a>
-                                    <a href='{% url 'catalog:update_product' product.id %}'
-                                       class="btn btn-outline-primary">Изменить</a>
-                                    <a href='{% url 'catalog:delete_product' product.id %}'
-                                       class="btn btn-outline-primary">Удалить</a>
+                            {% if user.is_authenticated %}
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="btn-group">
+                                        <a href='{% url 'catalog:product' product.id %}'
+                                           class="btn btn-outline-primary">Просмотр</a>
+                                        <a href='{% url 'catalog:update_product' product.id %}'
+                                           class="btn btn-outline-primary">Изменить</a>
+                                        <a href='{% url 'catalog:delete_product' product.id %}'
+                                           class="btn btn-outline-primary">Удалить</a>
+                                    </div>
                                 </div>
-                            </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

@@ -13,6 +13,7 @@
                             <p class="card-text">Дата создания: {{ object.date_create }}</p>
                             <p class="card-text">Дата изменения: {{ object.date_modify }}</p>
                             <p class="card-text">Категория: {{ object.category }}</p>
+                            {% if object.user %}<p class="card-text">Создал: {{ object.user }}</p>{% endif %}
                         </div>
                     </div>
                 </div>
