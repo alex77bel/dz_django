@@ -1,5 +1,6 @@
-from django.contrib.auth.models import User
 from django.db import models
+
+from users.models import User
 
 
 class Category(models.Model):
@@ -23,6 +24,7 @@ class Product(models.Model):
     date_create = models.DateField(verbose_name='Дата создания', auto_now_add=True)
     date_modify = models.DateField(verbose_name='Дата изменения', auto_now=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, verbose_name='Категория', null=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='Пользователь', null=True)
 
     def __str__(self):
         return f'{self.name}'

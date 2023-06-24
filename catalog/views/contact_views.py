@@ -1,9 +1,9 @@
-from django.views.generic import ListView
-from catalog.models import Contacts
+from django.views import generic
+from catalog import models
 
 
-class ContactsListView(ListView):
-    model = Contacts
+class ContactsListView(generic.ListView):
+    model = models.Contacts
     extra_context = {
         'title': 'Контакты'
     }

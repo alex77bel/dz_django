@@ -1,14 +1,14 @@
 from django.forms import inlineformset_factory
 from django.urls import reverse_lazy, reverse
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views import generic
 from catalog.models import Product, Version
 
 from catalog.forms import ProductForm, VersionForm
 
-PRODUCTS_PER_PAGE = 8
+PRODUCTS_PER_PAGE = 6
 
 
-class ProductsListView(ListView):
+class ProductsListView(generic.ListView):
     model = Product
     paginate_by = PRODUCTS_PER_PAGE
     extra_context = {
@@ -16,7 +16,7 @@ class ProductsListView(ListView):
     }
 
 
-class ProductDetailView(DetailView):
+class ProductDetailView(generic.DetailView):
     model = Product
 
     def get_context_data(self, **kwargs):
@@ -25,7 +25,7 @@ class ProductDetailView(DetailView):
         return context_data
 
 
-class ProductCreateView(CreateView):
+class ProductCreateView(generic.CreateView):
     model = Product
     form_class = ProductForm
     success_url = reverse_lazy('catalog:home')
@@ -51,10 +51,14 @@ class ProductCreateView(CreateView):
         if formset.is_valid():
             formset.instance = self.object
             formset.save()
+        if form.is_valid():
+            fields = form.save(commit=False)
+            fields.user = self.request.user
+            fields.save()
         return super().form_valid(form)
 
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(generic.UpdateView):
     model = Product
     form_class = ProductForm
     extra_context = {
@@ -85,7 +89,7 @@ class ProductUpdateView(UpdateView):
         return super().form_valid(form)
 
 
-class ProductDeleteView(DeleteView):
+class ProductDeleteView(generic.DeleteView):
     model = Product
     template_name = 'catalog/confirm_delete.html'
     success_url = reverse_lazy('catalog:home')

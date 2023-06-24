@@ -1,5 +1,3 @@
-__all__ = [
-    'blog_views',
-    'contact_views',
-    'product_views'
-]
+from .product_views import *
+from .blog_views import *
+from .contact_views import *
