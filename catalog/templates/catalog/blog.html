@@ -2,11 +2,13 @@
 {% block content %}
 
     <div class="container">
-        <div class="row">
-            <div class="col-4">
-                <a href='{% url 'catalog:create_post' %}' class="btn btn-success m-2"> Написать статью </a>
+        {% if perms.catalog.add_pos %}
+            <div class="row">
+                <div class="col-4">
+                    <a href='{% url 'catalog:create_post' %}' class="btn btn-success m-2"> Написать статью </a>
+                </div>
             </div>
-        </div>
+        {% endif %}
     </div>
     {% for post in object_list %}
         <div class="col-md-12">
@@ -21,10 +23,16 @@
                         <div class="btn-group">
                             <a href='{% url 'catalog:post' post.created.year post.created.month post.created.day post.slug %}'
                                class="btn btn-outline-primary">Перейти к статье</a>
-                            <a href='{% url 'catalog:update_post' post.created.year post.created.month post.created.day post.slug %}'
-                               class="btn btn-outline-primary">Редактировать</a>
-                            <a href='{% url 'catalog:delete_post' post.created.year post.created.month post.created.day post.slug %}'
-                               class="btn btn-outline-primary">Удалить</a>
+
+                            {% if perms.catalog.change_post %}
+                                <a href='{% url 'catalog:update_post' post.created.year post.created.month post.created.day post.slug %}'
+                                   class="btn btn-outline-primary">Редактировать</a>
+                            {% endif %}
+
+                            {% if perms.catalog.delete_post %}
+                                <a href='{% url 'catalog:delete_post' post.created.year post.created.month post.created.day post.slug %}'
+                                   class="btn btn-outline-primary">Удалить</a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
