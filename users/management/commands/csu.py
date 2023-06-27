@@ -5,7 +5,7 @@ from users.models import User
 
 class Command(BaseCommand):
     """
-    Класс - команда для создания пользователя
+    Класс - команда для создания суперпользователя
     """
 
     def handle(self, *args, **options):

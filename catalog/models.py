@@ -16,6 +16,11 @@ class Category(models.Model):
         ordering = ('name',)
 
 
+class PublishedManager(models.Manager):  # менеджер модели для продукта со статусом published=True
+    def get_queryset(self):
+        return super().get_queryset().filter(status=True)
+
+
 class Product(models.Model):
     name = models.CharField(max_length=100, verbose_name='Наименование', blank=False, null=False)
     description = models.TextField(verbose_name='Описание', blank=True, null=True)
@@ -25,6 +30,10 @@ class Product(models.Model):
     date_modify = models.DateField(verbose_name='Дата изменения', auto_now=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, verbose_name='Категория', null=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='Пользователь', null=True)
+    status = models.BooleanField(verbose_name='Статус публикации', default=False)
+
+    objects = models.Manager()  # стандартный менеджер
+    published = PublishedManager()  # дополнительный менеджер
 
     def __str__(self):
         return f'{self.name}'
@@ -33,7 +42,11 @@ class Product(models.Model):
         verbose_name = 'Товар'
         verbose_name_plural = 'Товары'
         ordering = ('name',)
-
+        # permissions = (
+        #     ('can_change_status', 'can change status'),
+        #     ('can_change_description', 'can change description'),
+        #     ('can_change_category', 'can change category'),
+        # )
 
 class Contacts(models.Model):
     name = models.CharField(max_length=100, verbose_name='Имя')

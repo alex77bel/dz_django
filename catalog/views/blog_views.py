@@ -1,3 +1,4 @@
+from django.contrib.auth import mixins
 from django.urls import reverse_lazy, reverse
 from django.utils.text import slugify
 from django.views import generic
@@ -8,7 +9,8 @@ from catalog.services import sendmail
 
 
 
-class BlogPostCreateView(generic.CreateView):
+class BlogPostCreateView(mixins.PermissionRequiredMixin, generic.CreateView):
+    permission_required = 'catalog.add_post'
     model = Post
     form_class = BlogForm
     success_url = reverse_lazy('catalog:blog')
@@ -60,7 +62,8 @@ class BlogPostDetailView(generic.DetailView):
         return context_data
 
 
-class BlogPostUpdateView(generic.UpdateView):
+class BlogPostUpdateView(mixins.PermissionRequiredMixin, generic.UpdateView):
+    permission_required = 'catalog.change_post'
     model = Post
     form_class = BlogForm
     extra_context = {
@@ -71,7 +74,8 @@ class BlogPostUpdateView(generic.UpdateView):
         return reverse('catalog:post', args=[*self.kwargs.values()])
 
 
-class BlogPostDeleteView(generic.DeleteView):
+class BlogPostDeleteView(mixins.PermissionRequiredMixin, generic.DeleteView):
+    permission_required = 'catalog.delete_post'
     model = Post
     template_name = 'catalog/confirm_delete.html'
     extra_context = {
