@@ -28,9 +28,10 @@ class Product(models.Model):
     price = models.FloatField(verbose_name='Цена', blank=False, null=False)
     date_create = models.DateField(verbose_name='Дата создания', auto_now_add=True)
     date_modify = models.DateField(verbose_name='Дата изменения', auto_now=True)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, verbose_name='Категория', null=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, verbose_name='Категория', null=True,
+                                 related_name='product')
     user = models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name='Пользователь', null=True)
-    status = models.BooleanField(verbose_name='Статус публикации', default=False)
+    status = models.BooleanField(verbose_name='Статус публикации', default=False, )
 
     objects = models.Manager()  # стандартный менеджер
     published = PublishedManager()  # дополнительный менеджер
@@ -42,11 +43,7 @@ class Product(models.Model):
         verbose_name = 'Товар'
         verbose_name_plural = 'Товары'
         ordering = ('name',)
-        # permissions = (
-        #     ('can_change_status', 'can change status'),
-        #     ('can_change_description', 'can change description'),
-        #     ('can_change_category', 'can change category'),
-        # )
+
 
 class Contacts(models.Model):
     name = models.CharField(max_length=100, verbose_name='Имя')
